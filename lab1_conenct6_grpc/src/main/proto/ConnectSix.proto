@@ -10,7 +10,7 @@ message ConnectClientResponse{
 }
 
 message GetFieldResponse{
-  int32 field = 1;
+  repeated int32 field = 1 [packed=true];
 }
 
 message PlayerMoveRequest{
@@ -22,13 +22,13 @@ message PlayerMoveResponse{
   int32 error = 1;
 }
 
-message GetTurnRequest{
-  int32 turn = 1;
+message GetTurnResponse{
+  sint32 turn = 1;
 }
 
 service ConnectSixService{
   rpc connect_client(google.protobuf.Empty) returns (ConnectClientResponse);
   rpc get_field(google.protobuf.Empty) returns (GetFieldResponse);
   rpc player_move(PlayerMoveRequest) returns (PlayerMoveResponse);
-  rpc get_turn(google.protobuf.Empty) returns (GetTurnRequest);
+  rpc get_turn(google.protobuf.Empty) returns (GetTurnResponse);
 }

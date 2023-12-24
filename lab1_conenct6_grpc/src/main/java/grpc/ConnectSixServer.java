@@ -7,14 +7,14 @@ import grpc.ex1.ConnectSixProto;
 import grpc.ex1.PlayerMoveRequest;
 import grpc.ex1.PlayerMoveResponse;
 import grpc.ex1.GetFieldResponse;
-import grpc.ex1.GetTurnRequest;
+import grpc.ex1.GetTurnResponse;
 
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
-
+import java.util.*;
 
 import java.rmi.RemoteException;
 
@@ -25,9 +25,6 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
     int turnNum = 1;
     int boardSize = 19;
     int[] board = new int[boardSize];
-
-
-
 
 
     @Override
@@ -45,14 +42,16 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
         responseObserver.onCompleted();
     }
 
-//    @Override
-//    public void getField(com.google.protobuf.Empty request,
-//                              io.grpc.stub.StreamObserver<grpc.ex1.GetFieldResponse> responseObserver) {
-//
-//        GetFieldResponse statusResponse = GetFieldResponse.newBuilder().setField(board.).build();
-//        responseObserver.onNext(statusResponse);
-//        responseObserver.onCompleted();
-//    }
+    @Override
+    public void getField(com.google.protobuf.Empty request,
+                              io.grpc.stub.StreamObserver<grpc.ex1.GetFieldResponse> responseObserver) {
+
+        GetFieldResponse statusResponse = GetFieldResponse.newBuilder()
+                        .addAllField(Arrays.stream(board).boxed().toList())
+                        .build();
+        responseObserver.onNext(statusResponse);
+        responseObserver.onCompleted();
+    }
 
 
     @Override
@@ -61,10 +60,10 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
         int i = request.getX();
         int j = request.getY();
 
-        if (turn == 3) {
-            return;
-        } else if (turn == 4) {
-            return;
+        if (turn < 0) {
+            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setError(0).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
         if (board[boardSize * i + j] != 1 && board[boardSize * i + j] != 2) {
             if (turn == 1) {
@@ -79,13 +78,21 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
             }
             this.turnNum += 1;
             checkWin();
+            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setError(0).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+        else{
+            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setError(1).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
     }
 
     @Override
     public void getTurn(com.google.protobuf.Empty request,
-                        io.grpc.stub.StreamObserver<grpc.ex1.GetTurnRequest> responseObserver) {
-        GetTurnRequest statusResponse = GetTurnRequest.newBuilder().setTurn(turn).build();
+                        io.grpc.stub.StreamObserver<grpc.ex1.GetTurnResponse> responseObserver) {
+        GetTurnResponse statusResponse = GetTurnResponse.newBuilder().setTurn(turn).build();
         responseObserver.onNext(statusResponse);
         responseObserver.onCompleted();
     }
@@ -125,7 +132,6 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
     }
 
     void checkDiagTwo() {
-        // top-left to bottom-right - red diagonals
         int colStart = boardSize - winCount - 1;
         while (colStart >= 1) {
             int countX = 0, countO = 0;
@@ -159,7 +165,6 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
     }
 
     void checkGrid() {
-        // in cols
         int i = boardSize - 1;
         while (i >= 0) {
             int colX = 0, colO = 0;

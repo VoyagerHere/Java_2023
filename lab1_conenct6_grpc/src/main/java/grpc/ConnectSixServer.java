@@ -1,4 +1,4 @@
-package encyclopedia;
+package grpc;
 
 import com.google.protobuf.Empty;
 import grpc.ex1.ConnectSixServiceGrpc;

@@ -24,7 +24,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
     int turn = 1;
     int turnNum = 1;
     int boardSize = 19;
-    int[] board = new int[boardSize];
+    int[] board = new int[boardSize*boardSize];
 
 
     @Override
@@ -61,7 +61,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
         int j = request.getY();
 
         if (turn < 0) {
-            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setError(0).build();
+            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setWin(-turn).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
@@ -78,12 +78,12 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
             }
             this.turnNum += 1;
             checkWin();
-            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setError(0).build();
+            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setWin(0).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
         else{
-            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setError(1).build();
+            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setWin(0).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
@@ -108,7 +108,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                     case 1 -> {
                         countX++;
                         if (countX >= winCount) {
-                            turn = 3;
+                            turn = -1;
                             return;
                         }
                     }
@@ -118,7 +118,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                     case 2 -> {
                         countO++;
                         if (countO >= winCount) {
-                            turn = 3;
+                            turn = -2;
                             return;
                         }
                     }
@@ -141,7 +141,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                     case 1 -> {
                         countX++;
                         if (countX >= winCount) {
-                            turn = 3;
+                            turn = -1;
                             return;
                         }
                     }
@@ -151,7 +151,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                     case 2 -> {
                         countO++;
                         if (countO >= winCount) {
-                            turn = 3;
+                            turn = -2;
                             return;
                         }
                     }
@@ -175,7 +175,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                         case 1 -> {
                             colX++;
                             if (colX >= winCount) {
-                                turn = 3;
+                                turn = -1;
                                 return;
                             }
                         }
@@ -185,7 +185,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                         case 2 -> {
                             colO++;
                             if (colO >= winCount) {
-                                turn = 3;
+                                turn = -2;
                                 return;
                             }
                         }
@@ -202,7 +202,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                     case 1 -> {
                         rowX++;
                         if (rowX >= winCount) {
-                            turn = 3;
+                            turn = -1;
                             return;
                         }
                     }
@@ -212,7 +212,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
                     case 2 -> {
                         rowO++;
                         if (rowO >= winCount) {
-                            turn = 3;
+                            turn = -2;
                             return;
                         }
                     }

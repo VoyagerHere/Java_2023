@@ -19,7 +19,7 @@ message PlayerMoveRequest{
 }
 
 message PlayerMoveResponse{
-  int32 error = 1;
+  int32 win = 1;
 }
 
 message GetTurnResponse{

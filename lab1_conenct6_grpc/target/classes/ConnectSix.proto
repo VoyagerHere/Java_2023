@@ -1,0 +1,34 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+package grpc.ex1;
+option java_multiple_files = true;
+option java_package = "grpc.ex1";
+option java_outer_classname = "ConnectSixProto";
+
+message ConnectClientResponse{
+  int32 id = 1;
+}
+
+message GetFieldResponse{
+  repeated int32 field = 1 [packed=true];
+}
+
+message PlayerMoveRequest{
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message PlayerMoveResponse{
+  int32 win = 1;
+}
+
+message GetTurnResponse{
+  sint32 turn = 1;
+}
+
+service ConnectSixService{
+  rpc connect_client(google.protobuf.Empty) returns (ConnectClientResponse);
+  rpc get_field(google.protobuf.Empty) returns (GetFieldResponse);
+  rpc player_move(PlayerMoveRequest) returns (PlayerMoveResponse);
+  rpc get_turn(google.protobuf.Empty) returns (GetTurnResponse);
+}

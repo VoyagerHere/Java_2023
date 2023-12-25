@@ -6,7 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-public class Client {
+public class Client implements Runnable{
 
     static int[] localBoard;
     static int playerNum = 0;
@@ -57,7 +57,7 @@ public class Client {
                 }
             }
         });
-        updateThread.start();
+//        updateThread.start();
 
         Thread gameThread = new Thread(new Runnable() {
             @Override
@@ -136,5 +136,10 @@ public class Client {
             }
             System.out.println(s);
         }
+    }
+
+    @Override
+    public void run() {
+
     }
 }

@@ -80,18 +80,24 @@ public class ConnectSixClient implements Runnable {
         connect("localhost", 8080);
         System.out.println("Id is " + id);
         int num[] = new int[2];
-
+        GetTurnResponse response_turn_init = stub.getTurn(Empty.newBuilder().build());
+        turn = response_turn_init.getTurn();
+        if(id == 1){
+            System.out.println("init turn: " + turn);
+        }
         while (true) {
+            GetTurnResponse response_turn = stub.getTurn(Empty.newBuilder().build());
+            turn = response_turn.getTurn();
+//            System.out.println("turn is: " + turn + "and id is" + id);
             if (id == turn) {
                 num[0] = rand.nextInt(boardSize+1);
                 num[1] = rand.nextInt(boardSize+1);
                 PlayerMoveRequest request = PlayerMoveRequest.newBuilder().setX(num[0]).setY(num[1]).build();
                 PlayerMoveResponse response =  stub.playerMove(request);
                 if (response.getWin() > 0){
+                    System.out.println("PLAYER " + id + " WIN");
                     return;
                 }
-                GetTurnResponse response_turn = stub.getTurn(Empty.newBuilder().build());
-                turn = response_turn.getTurn();
                 if (id == 1){
                     GetFieldResponse response_field = stub.getField(Empty.newBuilder().build());
                     List<Integer> fieldList = response_field.getFieldList();
@@ -100,7 +106,7 @@ public class ConnectSixClient implements Runnable {
                 }
                 System.out.println("update turn: " + turn);
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(400);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

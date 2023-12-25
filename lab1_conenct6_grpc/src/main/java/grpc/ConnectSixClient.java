@@ -11,7 +11,6 @@ import java.util.*;
 public class ConnectSixClient implements Runnable {
     static int[] localBoard;
 
-    static int playerNum = 0;
     static int turn = 0;
     static final int boardSize = 19;
     int id;
@@ -19,7 +18,6 @@ public class ConnectSixClient implements Runnable {
     static Random rand = new Random();
 
     ConnectSixServiceGrpc.ConnectSixServiceBlockingStub stub;
-
 
     public static void main(String[] args) {
         ConnectSixClient player1 = new ConnectSixClient();
@@ -30,13 +28,12 @@ public class ConnectSixClient implements Runnable {
 
     static void getField(ConnectSixServiceGrpc.ConnectSixServiceBlockingStub client) {
         GetTurnResponse response_turn = client.getTurn(Empty.newBuilder().build());
-//        GetFieldResponse response = client.getField(Empty.newBuilder().build());
-//        List<Integer> fieldList = response.getFieldList();
-//        localBoard = fieldList.stream().mapToInt(i->i).toArray();
+        GetFieldResponse response = client.getField(Empty.newBuilder().build());
+        List<Integer> fieldList = response.getFieldList();
+        localBoard = fieldList.stream().mapToInt(i->i).toArray();
         turn = response_turn.getTurn();
         System.out.println("update turn: " + turn);
     }
-
 
     public void connect(String host, int port) {
         Channel channel = ManagedChannelBuilder.forAddress(host, port)
@@ -85,16 +82,23 @@ public class ConnectSixClient implements Runnable {
         int num[] = new int[2];
 
         while (true) {
-            if (playerNum == turn) {
+            if (id == turn) {
                 num[0] = rand.nextInt(boardSize+1);
                 num[1] = rand.nextInt(boardSize+1);
-
-                if (turn == 1 && playerNum == 1 && num[0] != 9 && num[1] != 9) continue;
                 PlayerMoveRequest request = PlayerMoveRequest.newBuilder().setX(num[0]).setY(num[1]).build();
                 PlayerMoveResponse response =  stub.playerMove(request);
                 if (response.getWin() > 0){
                     return;
                 }
+                GetTurnResponse response_turn = stub.getTurn(Empty.newBuilder().build());
+                turn = response_turn.getTurn();
+                if (id == 1){
+                    GetFieldResponse response_field = stub.getField(Empty.newBuilder().build());
+                    List<Integer> fieldList = response_field.getFieldList();
+                    localBoard = fieldList.stream().mapToInt(i->i).toArray();
+                    printBoard(localBoard);
+                }
+                System.out.println("update turn: " + turn);
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {

@@ -90,8 +90,8 @@ public class ConnectSixClient implements Runnable {
             turn = response_turn.getTurn();
 //            System.out.println("turn is: " + turn + "and id is" + id);
             if (id == turn) {
-                num[0] = rand.nextInt(boardSize+1);
-                num[1] = rand.nextInt(boardSize+1);
+                num[0] = rand.nextInt(boardSize);
+                num[1] = rand.nextInt(boardSize);
                 PlayerMoveRequest request = PlayerMoveRequest.newBuilder().setX(num[0]).setY(num[1]).build();
                 PlayerMoveResponse response =  stub.playerMove(request);
                 if (response.getWin() > 0){

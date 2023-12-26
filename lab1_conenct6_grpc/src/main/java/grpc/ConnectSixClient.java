@@ -79,7 +79,7 @@ public class ConnectSixClient implements Runnable {
     public void run() {
         connect("localhost", 8080);
         System.out.println("Id is " + id);
-        int num[] = new int[2];
+        int num[] = new int[4];
         GetTurnResponse response_turn_init = stub.getTurn(Empty.newBuilder().build());
         turn = response_turn_init.getTurn();
         if(id == 1){
@@ -88,13 +88,26 @@ public class ConnectSixClient implements Runnable {
         while (true) {
             GetTurnResponse response_turn = stub.getTurn(Empty.newBuilder().build());
             turn = response_turn.getTurn();
-//            System.out.println("turn is: " + turn + "and id is" + id);
             if (id == turn) {
-                num[0] = rand.nextInt(boardSize);
-                num[1] = rand.nextInt(boardSize);
-                PlayerMoveRequest request = PlayerMoveRequest.newBuilder().setX(num[0]).setY(num[1]).build();
-                PlayerMoveResponse response =  stub.playerMove(request);
-                if (response.getWin() > 0){
+                PlayerMoveResponse response;
+                GetTurnNumResponse response_turn_num = stub.getTurnNum(Empty.newBuilder().build());
+                if(response_turn_num.getTurnNum() == 1){
+                    num[0] = rand.nextInt(boardSize-1);
+                    num[1] = rand.nextInt(boardSize-1);
+                    PlayerMoveRequest request = PlayerMoveRequest.newBuilder().setX(num[0]).setY(num[1]).build();
+                    response =  stub.playerMove(request);
+                }
+                else{
+                    num[0] = rand.nextInt(boardSize-1);
+                    num[1] = rand.nextInt(boardSize-1);
+                    num[2] = rand.nextInt(boardSize-1);
+                    num[3] = rand.nextInt(boardSize-1);
+                    PlayerMoveRequest request_1 = PlayerMoveRequest.newBuilder().setX(num[0]).setY(num[1]).build();
+                    response =  stub.playerMove(request_1);
+                    PlayerMoveRequest request_2 = PlayerMoveRequest.newBuilder().setX(num[2]).setY(num[3]).build();
+                    response =  stub.playerMove(request_2);
+                }
+                if (response.getWin() < 0){
                     System.out.println("PLAYER " + id + " WIN");
                     return;
                 }

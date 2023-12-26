@@ -8,6 +8,7 @@ import grpc.ex1.PlayerMoveRequest;
 import grpc.ex1.PlayerMoveResponse;
 import grpc.ex1.GetFieldResponse;
 import grpc.ex1.GetTurnResponse;
+import grpc.ex1.GetTurnNumResponse;
 
 
 import io.grpc.Server;
@@ -78,7 +79,7 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
             }
             this.turnNum += 1;
             checkWin();
-            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setWin(0).build();
+            PlayerMoveResponse response = PlayerMoveResponse.newBuilder().setWin(turn).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
@@ -93,6 +94,14 @@ public class ConnectSixServer extends ConnectSixServiceGrpc.ConnectSixServiceImp
     public void getTurn(com.google.protobuf.Empty request,
                         io.grpc.stub.StreamObserver<grpc.ex1.GetTurnResponse> responseObserver) {
         GetTurnResponse statusResponse = GetTurnResponse.newBuilder().setTurn(turn).build();
+        responseObserver.onNext(statusResponse);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getTurnNum(com.google.protobuf.Empty request,
+                        io.grpc.stub.StreamObserver<grpc.ex1.GetTurnNumResponse> responseObserver) {
+        GetTurnNumResponse statusResponse = GetTurnNumResponse.newBuilder().setTurnNum(turnNum).build();
         responseObserver.onNext(statusResponse);
         responseObserver.onCompleted();
     }

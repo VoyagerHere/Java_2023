@@ -26,9 +26,14 @@ message GetTurnResponse{
   sint32 turn = 1;
 }
 
+message GetTurnNumResponse{
+  int32 turn_num = 1;
+}
+
 service ConnectSixService{
   rpc connect_client(google.protobuf.Empty) returns (ConnectClientResponse);
   rpc get_field(google.protobuf.Empty) returns (GetFieldResponse);
   rpc player_move(PlayerMoveRequest) returns (PlayerMoveResponse);
   rpc get_turn(google.protobuf.Empty) returns (GetTurnResponse);
+  rpc get_turn_num(google.protobuf.Empty) returns (GetTurnNumResponse);
 }

@@ -77,13 +77,9 @@ public class Client {
                 System.out.println("Game started");
                 printBoard(data.board);
                 System.out.println("Done receiving on " + id);
-
                 while (currentTurn != (-1) && currentTurn != (-2)) {
                     if (currentTurn.equals(id)) {
                         System.out.println(currentTurn + " " + id);
-                        if (id == 1){
-                            printBoard();
-                        }
                         String[] word = reader.readLine().split(" ");
                         for(String s : word) nums.add(Integer.valueOf(s));
                         System.out.println(nums);
@@ -91,7 +87,9 @@ public class Client {
                         out.flush();
                         nums.clear();
                     }
-                    currentTurn = (Integer) in.readObject();
+                    data = (Data) in.readObject();
+                    currentTurn = data.turn;
+                    printBoard(data.board);
                     if (currentTurn == 0) {
                         break;
                     }

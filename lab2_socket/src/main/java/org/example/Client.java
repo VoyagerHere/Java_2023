@@ -44,12 +44,9 @@ public class Client {
     }
 
     public static void printWin() {
-        if (currentTurn == -1){
+        if (currentTurn == 0){
             System.out.println("Error in turn");
-            System.out.println("Game is stoped");
-        }
-        if (currentTurn == -2){
-            System.out.println("Win player - " + (-currentTurn));
+            System.out.println("Game is stopped");
         }
         if (currentTurn == -1){
             System.out.println("Win player - " + (-currentTurn));
@@ -83,8 +80,12 @@ public class Client {
                         System.out.println(currentTurn + " " + id);
                         String[] word = reader.readLine().split(" ");
                         for(String s : word) nums.add(Integer.valueOf(s));
+                        if (nums.size() == 2){
+                            nums.add(0);
+                            nums.add(0);
+                        }
                         System.out.println(nums);
-                        out.writeObject(new Point(nums.get(0), nums.get(1)));
+                        out.writeObject(new goTurn(nums.get(0), nums.get(1), nums.get(2), nums.get(3)));
                         out.flush();
                         nums.clear();
                     }
@@ -96,11 +97,11 @@ public class Client {
                     }
                     System.out.println("currentTurn changed to " + currentTurn);
                 }
-                printWin();
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } finally {
-                System.out.println("Клиент был закрыт...");
+                printWin();
+                System.out.println("Client closed");
                 clientSocket.close();
             }
         } catch (IOException e) {

@@ -22,8 +22,7 @@ public class Server {
     private static Integer winCount = 6; // Game rules variable
 
     private static int getIndex(int x, int y) {
-        if (x == 0 && y == 0) return -1;
-        return (x) * 10 + y;
+        return (x) * boardSize + y;
     }
 
     public static void checkDiagOne() {
@@ -156,10 +155,7 @@ public class Server {
         checkDiagTwo();
         checkGrid();
     }
-    public static boolean playerMove(Point point) {
-        int i = point.x;
-        int j = point.y;
-        System.out.println("Start turn");
+    public static boolean playerMove(int i, int j) {
         if (turn < 0) {
             return false;
         }
@@ -169,7 +165,6 @@ public class Server {
             } else {
                 board.set(getIndex(i, j), 2);
             }
-//            turnNum += 1;
             return true;
         }
         else{
@@ -207,16 +202,13 @@ public class Server {
                                 try {
                                     boolean move1 = true;
                                     boolean move2 = true;
-                                    if (turnNum == 1) { // First turn
-                                        Point p1 = (Point) in.readObject();
-                                        System.out.println("First turn");
-                                        move1 = playerMove(p1);
+                                    goTurn p1 = (goTurn) in.readObject();
+                                    System.out.println(p1.x + ":" + p1.y);
+                                    if (turnNum == 1) {
                                     }
                                     else{
-                                        Point p1 = (Point) in.readObject();
-                                        Point p2 = (Point) in.readObject();
-                                        move1 = playerMove(p1);
-                                        move2 = playerMove(p2);
+                                        move1 = playerMove(p1.x, p1.y);
+                                        move2 = playerMove(p1.z, p1.d);
                                     }
                                     if (turn == 1) {
                                         turn = 2;
@@ -226,7 +218,7 @@ public class Server {
                                     if (!move1 || !move2) {
                                         turn = 0;
                                     }
-                                    turnNum++;
+                                    turnNum += 1;
                                     checkWin();
                                     for (ObjectOutputStream stream : outs) {
                                         synchronized (stream) {

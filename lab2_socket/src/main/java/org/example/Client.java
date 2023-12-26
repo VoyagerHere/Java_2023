@@ -73,12 +73,16 @@ public class Client {
                 System.out.println("Player: " + id);
                 boardSize = (Integer) in.readObject();
                 List<Integer> board = (List<Integer>) in.readObject();
+                System.out.println("Game started");
                 printBoard();
                 System.out.println("Done receiving on " + id);
 
                 while (currentTurn != (-1) && currentTurn != (-2)) {
                     if (currentTurn.equals(id)) {
                         System.out.println(currentTurn + " " + id);
+                        if (id == 1){
+                            printBoard();
+                        }
                         String[] word = reader.readLine().split(" ");
                         for(String s : word) nums.add(Integer.valueOf(s));
                         System.out.println(nums);

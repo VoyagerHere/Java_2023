@@ -14,11 +14,10 @@ public class Client {
     private static Integer currentTurn = 1;
     private static Integer id = 0;
 
-    private static List<Integer> local_board = new ArrayList<>();
     private static List<Integer> nums = new ArrayList<>();
 
 
-    public static void printBoard() {
+    public static void printBoard(List<Integer> board) {
         String a = "";
         a += "    ";
         for (int i = 0; i < boardSize; i++) {
@@ -38,7 +37,7 @@ public class Client {
             }
 
             for (int j = 0; j < boardSize; j++) {
-                s += local_board.get(boardSize * i + j) + "  ";
+                s += board.get(boardSize * i + j) + "  ";
             }
             System.out.println(s);
         }
@@ -69,12 +68,14 @@ public class Client {
                 ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
 
-                id = (Integer) in.readObject();
-                System.out.println("Player: " + id);
+                Data data = null;
+
                 boardSize = (Integer) in.readObject();
-                List<Integer> board = (List<Integer>) in.readObject();
+                System.out.println(boardSize);
+                data = (Data) in.readObject();
+                id = data.turn;
                 System.out.println("Game started");
-                printBoard();
+                printBoard(data.board);
                 System.out.println("Done receiving on " + id);
 
                 while (currentTurn != (-1) && currentTurn != (-2)) {

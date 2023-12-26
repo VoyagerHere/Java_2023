@@ -10,8 +10,9 @@ public class Server {
     private static Socket clientSocket;
     private static ServerSocket server;
     private static List<ObjectOutputStream> outs = new ArrayList<>();
-    private static List<Integer> board = new ArrayList<>();
     private static final Integer boardSize = 19;
+    private static List<Integer> board = new ArrayList<>(boardSize*boardSize);
+
     private static Integer turn = 1;
 
     private static int turnNum = 1;
@@ -171,6 +172,10 @@ public class Server {
             return false;
         }
     }
+    private static void send(ObjectOutputStream outputStream, Data data) throws IOException {
+        outputStream.writeObject(data);
+        outputStream.reset();
+    }
 
 
     public static void main(String[] args) {
@@ -181,7 +186,7 @@ public class Server {
                 server = new ServerSocket(4004);
                 System.out.println("Сервер запущен!");
 
-                while((turn == -1) || (turn == -2)) {
+                while((turn == 1) || (turn == 2)) {
                     clientSocket = server.accept();
                     try {
                         ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -189,9 +194,8 @@ public class Server {
 
                         if (outs.size() == 2) clientSocket.close();
                         outs.add(out);
-                        out.writeObject(outs.size());
                         out.writeObject(boardSize);
-                        out.writeObject(board);
+                        send(out, new Data(outs.size(), board));
                         System.out.println("Done sending");
 
                         Thread thread = new Thread(() -> {
@@ -220,8 +224,9 @@ public class Server {
                                     turnNum++;
                                     checkWin();
                                     for (ObjectOutputStream stream : outs) {
-                                        stream.writeObject(turn);
-                                        stream.reset();
+                                        synchronized (stream) {
+                                            send(stream, new Data(turn, board));
+                                        }
                                     }
                                     out.flush();
                                     if (turn < 1){break;}

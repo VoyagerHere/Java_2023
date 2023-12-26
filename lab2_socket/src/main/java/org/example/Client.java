@@ -75,6 +75,7 @@ public class Client {
                 data = (Data) in.readObject();
                 id = data.turn;
                 System.out.println("Game started");
+                System.out.println(data.board);
                 printBoard(data.board);
                 System.out.println("Done receiving on " + id);
                 while (currentTurn != (-1) && currentTurn != (-2)) {
@@ -83,7 +84,7 @@ public class Client {
                         String[] word = reader.readLine().split(" ");
                         for(String s : word) nums.add(Integer.valueOf(s));
                         System.out.println(nums);
-                        out.writeObject(nums);
+                        out.writeObject(new Point(nums.get(0), nums.get(1)));
                         out.flush();
                         nums.clear();
                     }

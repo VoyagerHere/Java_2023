@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Server {
@@ -11,7 +12,8 @@ public class Server {
     private static ServerSocket server;
     private static List<ObjectOutputStream> outs = new ArrayList<>();
     private static final Integer boardSize = 19;
-    private static List<Integer> board = new ArrayList<>(boardSize*boardSize);
+    private static List<Integer> board = new ArrayList<Integer>(Collections.nCopies(boardSize*boardSize, 0));
+
 
     private static Integer turn = 1;
 
@@ -154,8 +156,10 @@ public class Server {
         checkDiagTwo();
         checkGrid();
     }
-    public static boolean playerMove(int i, int j) {
-
+    public static boolean playerMove(Point point) {
+        int i = point.x;
+        int j = point.y;
+        System.out.println("Start turn");
         if (turn < 0) {
             return false;
         }
@@ -185,13 +189,13 @@ public class Server {
             try {
                 server = new ServerSocket(4004);
                 System.out.println("Сервер запущен!");
+                System.out.println(board);
 
                 while((turn == 1) || (turn == 2)) {
                     clientSocket = server.accept();
                     try {
                         ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                         ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-
                         if (outs.size() == 2) clientSocket.close();
                         outs.add(out);
                         out.writeObject(boardSize);
@@ -203,15 +207,16 @@ public class Server {
                                 try {
                                     boolean move1 = true;
                                     boolean move2 = true;
-                                    List<Integer> nums = (List<Integer>) in.readObject();
-
                                     if (turnNum == 1) { // First turn
-                                        if (nums.size() == 4) {turn =0; break;}
-                                        move1 = playerMove(nums.get(0), nums.get(1));
+                                        Point p1 = (Point) in.readObject();
+                                        System.out.println("First turn");
+                                        move1 = playerMove(p1);
                                     }
                                     else{
-                                        move1 = playerMove(nums.get(0), nums.get(1));
-                                        move2 = playerMove(nums.get(2), nums.get(3));
+                                        Point p1 = (Point) in.readObject();
+                                        Point p2 = (Point) in.readObject();
+                                        move1 = playerMove(p1);
+                                        move2 = playerMove(p2);
                                     }
                                     if (turn == 1) {
                                         turn = 2;

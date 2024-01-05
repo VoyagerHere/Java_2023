@@ -82,9 +82,6 @@ public class ConnectSixClient implements Runnable {
         int num[] = new int[4];
         GetTurnResponse response_turn_init = stub.getTurn(Empty.newBuilder().build());
         turn = response_turn_init.getTurn();
-        if(id == 1){
-            System.out.println("init turn: " + turn);
-        }
         while (true) {
             GetTurnResponse response_turn = stub.getTurn(Empty.newBuilder().build());
             turn = response_turn.getTurn();
@@ -117,9 +114,9 @@ public class ConnectSixClient implements Runnable {
                     localBoard = fieldList.stream().mapToInt(i->i).toArray();
                     printBoard(localBoard);
                 }
-                System.out.println("update turn: " + turn);
+                System.out.println("Turn on " + id);
                 try {
-                    Thread.sleep(400);
+                    Thread.sleep(4000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
